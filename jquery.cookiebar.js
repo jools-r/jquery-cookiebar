@@ -29,6 +29,7 @@
             acceptFunction: function(cookieValue) {
                 if (cookieValue != 'enabled' && cookieValue != 'accepted') window.location = window.location.href;
             }, // Function to run after accept
+            cookieName: 'cookie-consent',
             declineButton: false, // Set to true to show decline/disable button
             declineText: 'Disable Cookies', // Text on decline/disable button
             declineFunction: function(cookieValue) {
@@ -60,14 +61,14 @@
         expireDate.setTime(expireDate.getTime() + (options.expireDays * 86400000));
         expireDate = expireDate.toGMTString();
 
-        var cookieEntry = 'cb-enabled={value}; expires=' + expireDate + '; path=/';
+        var cookieEntry = options.cookieName + '={value}; expires=' + expireDate + '; path=/';
 
         // Retrieves current cookie preference
         var i, cookieValue = '',
             aCookie, aCookies = document.cookie.split('; ');
         for (i = 0; i < aCookies.length; i++) {
             aCookie = aCookies[i].split('=');
-            if (aCookie[0] == 'cb-enabled') {
+            if (aCookie[0] == options.cookieName) {
                 cookieValue = aCookie[1];
             }
         }
