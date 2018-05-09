@@ -29,7 +29,7 @@
             acceptFunction: function(cookieValue) {
                 if (cookieValue != 'enabled' && cookieValue != 'accepted') window.location = window.location.href;
             }, // Function to run after accept
-            cookieName: 'cookie-consent',
+            cookieName: 'cb-enabled',
             declineButton: false, // Set to true to show decline/disable button
             declineText: 'Disable Cookies', // Text on decline/disable button
             declineFunction: function(cookieValue) {
