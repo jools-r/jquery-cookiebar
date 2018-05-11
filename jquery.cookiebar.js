@@ -25,6 +25,7 @@
         var defaults = {
             message: 'We use cookies to track usage and preferences.', // Message displayed on bar
             cookieName: 'cb-enabled', // Name of cookie
+            cookieBarClass: '', // Optional class name for cookie bar
             buttonClass: 'cb-button', // Base class name for buttons
             acceptButton: true, // Set to true to show accept/enable button
             acceptText: 'I Understand', // Text on accept/enable button
@@ -123,15 +124,23 @@
             } else {
                 var policyButton = '';
             }
+            // Custom class name for cookie bar if set
+            if (options.cookieBarClass != '') {
+                options.cookieBarClass = ' ' + options.cookieBarClass;
+            }
             // Whether to add "fixed" class to cookie bar
             if (options.fixed) {
                 if (options.bottom) {
-                    var fixed = ' class="fixed bottom"';
+                    var fixed = ' class="fixed bottom' + options.cookieBarClass + '"';
                 } else {
-                    var fixed = ' class="fixed"';
+                    var fixed = ' class="fixed' + options.cookieBarClass + '"';
                 }
             } else {
-                var fixed = '';
+                if (options.cookieBarClass != '') {
+                    var fixed = ' class="' + options.cookieBarClass.trim() + '"';
+                } else {
+                    var fixed = '';
+                }
             }
             if (options.zindex != '') {
                 var zindex = ' style="z-index:' + options.zindex + ';"';
