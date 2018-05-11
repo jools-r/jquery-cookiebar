@@ -103,8 +103,9 @@
                 return false;
             }
         } else {
-            // Sets up enable/accept button if required
-            var message = options.message.replace('{policy_url}', options.policyURL);
+            // Sets up message with drop-in replacements for text-linking policy url
+            // and for accept and decline links if preferred instead of buttons
+            var message = options.message.replace('{policy_url}', options.policyURL).replace('{accept_link}', '<a href="" class="cb-enable">' + options.acceptText + '</a>').replace('{decline_link}', '<a href="" class="cb-disable">' + options.declineText + '</a>');
 
             // Sets up enable/accept button if required
             if (options.acceptButton) {
