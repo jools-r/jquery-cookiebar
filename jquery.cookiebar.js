@@ -24,12 +24,12 @@
         }
         var defaults = {
             message: 'We use cookies to track usage and preferences.', // Message displayed on bar
+            cookieName: 'cb-enabled', // Name of cookie
             acceptButton: true, // Set to true to show accept/enable button
             acceptText: 'I Understand', // Text on accept/enable button
             acceptFunction: function(cookieValue) {
                 if (cookieValue != 'enabled' && cookieValue != 'accepted') window.location = window.location.href;
             }, // Function to run after accept
-            cookieName: 'cb-enabled',
             declineButton: false, // Set to true to show decline/disable button
             declineText: 'Disable Cookies', // Text on decline/disable button
             declineFunction: function(cookieValue) {
