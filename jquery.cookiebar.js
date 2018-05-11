@@ -25,6 +25,7 @@
         var defaults = {
             message: 'We use cookies to track usage and preferences.', // Message displayed on bar
             cookieName: 'cb-enabled', // Name of cookie
+            buttonClass: 'cb-button', // Base class name for buttons
             acceptButton: true, // Set to true to show accept/enable button
             acceptText: 'I Understand', // Text on accept/enable button
             acceptFunction: function(cookieValue) {
@@ -104,20 +105,21 @@
             // Sets up enable/accept button if required
             var message = options.message.replace('{policy_url}', options.policyURL);
 
+            // Sets up enable/accept button if required
             if (options.acceptButton) {
-                var acceptButton = '<a href="" class="cb-enable">' + options.acceptText + '</a>';
+                var acceptButton = '<a href="" class="cb-enable ' + options.buttonClass + '" aria-label="accept cookies" role="button">' + options.acceptText + '</a>';
             } else {
                 var acceptButton = '';
             }
             // Sets up disable/decline button if required
             if (options.declineButton) {
-                var declineButton = '<a href="" class="cb-disable">' + options.declineText + '</a>';
+                var declineButton = '<a href="" class="cb-disable ' + options.buttonClass + '" aria-label="decline cookies" role="button">' + options.declineText + '</a>';
             } else {
                 var declineButton = '';
             }
             // Sets up privacy policy button if required
             if (options.policyButton) {
-                var policyButton = '<a href="' + options.policyURL + '" class="cb-policy">' + options.policyText + '</a>';
+                var policyButton = '<a href="' + options.policyURL + '" class="cb-policy ' + options.buttonClass + '" aria-label="privacy policy" role="button">' + options.policyText + '</a>';
             } else {
                 var policyButton = '';
             }
