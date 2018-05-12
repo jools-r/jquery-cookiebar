@@ -67,6 +67,15 @@ This can be done by wrapping the code in a simple if statement.
 	}
 ```
 
+This runs the contained code if the cookie consent is `enabled` or `accepted`. If you wish to strictly test for `accepted`, pass that value as a second parameter:
+
+```js
+	if (jQuery.cookieBar('cookies','accepted')) {
+		// Google Analytics or other code here
+	}
+```
+
+
 ## Options
 
 There are a number of options allowing you to customise how the plugin works:
@@ -154,4 +163,5 @@ To reset cookie consent entirely:
 * Custom class names for buttons and wrapper for use with existing frameworks
 * Add replacement strings for accept and decline links in the message body
 * Add aria attributes
+* Add stricter if-conditional for 'accepted' cookie state only
 * More extensive help
