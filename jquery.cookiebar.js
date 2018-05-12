@@ -88,10 +88,10 @@
             }
         }
         if (doReturn == 'cookies') {
-            // STRICT: Returns true if cookies are accepted and 'accepted' is specified as value
+            // STRICT: Returns true if cookies are accepted and 'accepted' is additionally passed as a condition
             if (val == 'accepted' && cookieValue == 'accepted') {
-            return true;
-            // IMPLIED: Returns true if cookies are enabled, false otherwise
+                return true;
+            // IMPLIED: Returns true if cookies are enabled or accepted, false otherwise
             } else if (val != 'accepted' && (cookieValue == 'enabled' || cookieValue == 'accepted')) {
                 return true;
             } else {
