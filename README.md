@@ -144,17 +144,6 @@ To decline cookies:
 	<a href="javascript:void(0);" onClick="jQuery.cookieBar('set','declined');">Decline cookies</a>
 ```
 
-To reset to implied consent state and make the bar reappear:
-
-```html
-	<a href="javascript:void(0);" onClick="jQuery.cookieBar('set','enabled');">Reset cookie consent</a>
-```
-
-To reset cookie consent entirely:
-
-```html
-	<a href="javascript:void(0);" onClick="jQuery.cookieBar('set','');">Reset cookie consent</a>
-```
 
 ## Changelog
 
