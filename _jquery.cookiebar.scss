@@ -1,17 +1,17 @@
 #cookie-bar {
-    background: #111;
+    background: #111111;
+    color: #dddddd;
     height: auto;
-    line-height: 24px;
-    color: #eee;
-    text-align: center;
-    padding: 3px 0;
+    line-height: 1.3em;
+    text-align: left;
+    padding: 0em 1.5em;
 
     &.fixed {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
-        z-index: 1200
+        z-index: 1200;
     }
 
     &.fixed.bottom {
@@ -22,41 +22,99 @@
      p {
          margin: 0;
          padding: 0;
+         display: -ms-flexbox;
+         display: flex;
+         -ms-flex-wrap: nowrap;
+         flex-wrap: nowrap;
+         -ms-flex-direction: row;
+         flex-direction: row;
      }
 
-     a {
-         color: #fff;
-         display: inline-block;
-         border-radius: 3px;
-         text-decoration: none;
-         padding: 0 6px;
-         margin-left: 8px;
-     }
+    a {
+        color: #dddddd;
+        display: inline-block;
+        text-decoration: none;
 
-    .cb-enable {
-        background: #007700;
-        cursor: pointer;
+        &:hover {
+            color: #ffffff;
+        }
     }
 
-    .cb-enable:hover {
+    .cb-message {
+        padding: 1em 0;
+        -ms-flex: 1;
+        flex: 1;
+    }
+
+    .cb-buttons {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-line-pack: justify;
+        align-content: space-between;
+    }
+    .cb-button {
+        background: transparent;
+        border-width: 2px;
+        border-style: solid;
+        border-color: #777777;
+        border-radius: 3px;
+        cursor: pointer;
+        padding: 0.35em 1.75em;
+        margin-left: 1.5em;
+    }
+
+    .cb-enable {
         background: #009900;
     }
 
+    .cb-enable:hover {
+        background: #00aa00;
+    }
+
     .cb-disable {
-        background: #990000;
-        cursor: pointer;
+        background: transparent;
     }
 
     .cb-disable:hover {
-        background: #bb0000;
+        background: #777777;
     }
 
     .cb-policy {
         background: #0033bb;
-        cursor: pointer;
     }
 
     .cb-policy:hover {
         background: #0055dd;
+    }
+}
+
+@media screen and (max-width: 720px) {
+    #cookie-bar {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1200;
+        padding: 0 20px;
+    }
+}
+@media screen and (max-width: 620px) {
+    #cookie-bar {
+        flex: none;
+
+        p {
+            display: block;
+        }
+        .cb-message,
+        .cb-buttons {
+            display: block;
+            text-align: center;
+        }
+        .cb-buttons {
+            padding-bottom: 1em;
+        }
     }
 }
