@@ -53,6 +53,10 @@
             fixed: false, // Set to true to add the class "fixed" to the cookie bar. Default CSS should fix the position
             bottom: false, // Force CSS when fixed, so bar appears at bottom of website
             zindex: '', // Can be set in CSS, although some may prefer to set here
+            honorDnt: false, // Set to true to respond to Do Not Track browser settings
+            dntMessage: 'Your ‘Do Not Track’ browser settings were recognized. Tracking cookies will not be set. You can change your settings on our <a href="{policy_url}">Privacy Policy</a> page.',
+            dntCookieName: 'donottrack-message', // Name of Do Not Track bar cookie
+            dntCookieBarClass: 'cb-donottrack', // Optional additional class name for Do Not Track bar
             domain: String(window.location.hostname), // Location of privacy policy
             referrer: String(document.referrer) // Where visitor has come from
         };
@@ -66,19 +70,51 @@
         var cookieEntry = options.cookieName + '={value}; expires=' + expireDate + '; path=/';
 
         // Retrieves current cookie preference
-        var i, cookieValue = '',
+        var i, cookieValue = '', dntValue = '',
             aCookie, aCookies = document.cookie.split('; ');
         for (i = 0; i < aCookies.length; i++) {
             aCookie = aCookies[i].split('=');
             if (aCookie[0] == options.cookieName) {
                 cookieValue = aCookie[1];
             }
+            if (aCookie[0] == options.dntCookieName) {
+                dntValue = aCookie[1];
+            }
         }
+
+        // Test for Do Not Track setting in browser
+        var dntEnabled = function() {
+            if (typeof window.navigator.doNotTrack !== "undefined") {
+                var result = window.navigator.doNotTrack;
+                // Mozilla: https://bugzilla.mozilla.org/show_bug.cgi?id=887703
+                if (result === "yes") result = "1";
+                if (result === "no") result = "0";
+                dntStatus = result;
+            } else if (typeof window.navigator.msDoNotTrack !== "undefined") {
+                // IE9, IE10
+                dntStatus = window.navigator.msDoNotTrack;
+            } else if (typeof window.doNotTrack !== "undefined") {
+                // Safari 7.1.3+, IE11
+                dntStatus = window.doNotTrack;
+            } else {
+                dntStatus = "unspecified";
+            }
+            dntStatus = { '0': 'Disabled', '1': 'Enabled' }[dntStatus] || 'Unspecified';
+
+            return dntStatus === 'Enabled' ? true : false;
+        };
+
         // Sets up default cookie preference if not already set
-        if (cookieValue == '' && doReturn != 'cookies' && options.autoEnable) {
+        if (options.honorDnt && dntEnabled() && dntValue == '') {
+            // Do Not Track is set and detected for the first time -> decline cookies
+            cookieValue = 'declined';
+            document.cookie = cookieEntry.replace('{value}', 'declined');
+        } else if (cookieValue == '' && doReturn != 'cookies' && options.autoEnable) {
+            // Autoenable is on -> enable cookies
             cookieValue = 'enabled';
             document.cookie = cookieEntry.replace('{value}', 'enabled');
         } else if ((cookieValue == 'accepted' || cookieValue == 'declined') && doReturn != 'cookies' && options.renewOnVisit) {
+            // Renew cookie value on each visit
             document.cookie = cookieEntry.replace('{value}', cookieValue);
         }
         if (options.acceptOnContinue) {
@@ -87,6 +123,8 @@
                 val = 'accepted';
             }
         }
+
+        // Test cookie values
         if (doReturn == 'cookies') {
             // STRICT: Returns true if cookies are accepted and 'accepted' is additionally passed as a condition
             if (val == 'accepted' && cookieValue == 'accepted') {
@@ -97,7 +135,10 @@
             } else {
                 return false;
             }
-        } else if (doReturn == 'set' && (val == 'accepted' || val == 'declined')) {
+        }
+
+        // Set cookie values
+        else if (doReturn == 'set' && (val == 'accepted' || val == 'declined')) {
             // Sets value of cookie to 'accepted' or 'declined'
             document.cookie = cookieEntry.replace('{value}', val);
             if (val == 'accepted') {
@@ -105,10 +146,23 @@
             } else {
                 return false;
             }
-        } else {
+        }
+
+        // Show cookie bar
+        else {
+
+            // If Do Not Track is set and DNT message has not yet been displayed
+            if (options.honorDnt && dntEnabled() && dntValue == '') {
+                var message = options.dntMessage;
+                // set Do Not Track message cookie to 'seen'
+                document.cookie = options.dntCookieName + '=seen; expires=' + expireDate + '; path=/';
+            } else {
+                var message = options.message;
+            }
+
             // Sets up message with drop-in replacements for text-linking policy url
             // and for accept and decline links if preferred instead of buttons
-            var message = options.message.replace('{policy_url}', options.policyURL).replace('{accept_link}', '<a href="" class="cb-enable">' + options.acceptText + '</a>').replace('{decline_link}', '<a href="" class="cb-disable">' + options.declineText + '</a>');
+            message = message.replace('{policy_url}', options.policyURL).replace('{accept_link}', '<a href="" class="cb-enable">' + options.acceptText + '</a>').replace('{decline_link}', '<a href="" class="cb-disable">' + options.declineText + '</a>');
 
             // Sets up enable/accept button if required
             if (options.acceptButton) {
@@ -129,19 +183,23 @@
                 var policyButton = '';
             }
             // Custom class name for cookie bar if set
+            var cbClass = '';
             if (options.cookieBarClass != '') {
-                options.cookieBarClass = ' ' + options.cookieBarClass;
+                cbClass = ' ' + options.cookieBarClass;
+            }
+            if (options.honorDnt && (options.dntCookieBarClass != '')) {
+                cbClass = cbClass + ' ' + options.dntCookieBarClass;
             }
             // Whether to add "fixed" class to cookie bar
             if (options.fixed) {
                 if (options.bottom) {
-                    var fixed = ' class="fixed bottom' + options.cookieBarClass + '"';
+                    var fixed = ' class="fixed bottom' + cbClass + '"';
                 } else {
-                    var fixed = ' class="fixed' + options.cookieBarClass + '"';
+                    var fixed = ' class="fixed' + cbClass + '"';
                 }
             } else {
-                if (options.cookieBarClass != '') {
-                    var fixed = ' class="' + options.cookieBarClass.trim() + '"';
+                if (cbClass != '') {
+                    var fixed = ' class="' + cbClass.trim() + '"';
                 } else {
                     var fixed = '';
                 }
@@ -152,8 +210,16 @@
                 var zindex = '';
             }
 
+            // If Do Not Track is set and DNT message has not yet been shown
+            if (options.honorDnt && dntEnabled() && dntValue == '') {
+                if (options.append) {
+                    $(options.element).append('<div id="cookie-bar"' + fixed + zindex + ' aria-live="polite" aria-label="cookie-consent-bar" aria-describedby="cb-message"><p><span id="cb-message" class="cb-message">' + message + '</span>');
+                } else {
+                    $(options.element).prepend('<div id="cookie-bar"' + fixed + zindex + ' aria-live="polite" aria-label="cookie-consent-bar" aria-describedby="cb-message"><p><span id="cb-message" class="cb-message">' + message + '</span>');
+                }
+            }
             // Displays the cookie bar if arguments met
-            if (options.forceShow || cookieValue == 'enabled' || cookieValue == '') {
+            else if (options.forceShow || cookieValue == 'enabled' || cookieValue == '') {
                 if (options.append) {
                     $(options.element).append('<div id="cookie-bar"' + fixed + zindex + ' aria-live="polite" aria-label="cookie-consent-bar" aria-describedby="cb-message"><p><span id="cb-message" class="cb-message">' + message + '</span><span class="cb-buttons">' + acceptButton + declineButton + policyButton + '</span></p></div>');
                 } else {

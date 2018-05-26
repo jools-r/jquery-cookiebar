@@ -111,6 +111,10 @@ There are a number of options allowing you to customise how the plugin works:
 	fixed: false, // Set to true to add the class "fixed" to the cookie bar. Default CSS should fix the position
 	bottom: false, // Force CSS when fixed, so bar appears at bottom of website
 	zindex: '', // Can be set in CSS, although some may prefer to set here
+	honorDnt: false, // Set to true to respond to Do Not Track browser settings
+	dntMessage: 'Your ‘Do Not Track’ browser settings were recognized. Tracking cookies will not be set. You can change your settings on our <a href="{policy_url}">Privacy Policy</a> page.', // Message that appears on browsers with "Do Not Track" on
+	dntCookieName: 'donottrack-message', // Name of Do Not Track bar cookie
+	dntCookieBarClass: 'cb-donottrack', // Optional additional class name for Do Not Track bar
 	domain: String(window.location.hostname), // Location of privacy policy
 	referrer: String(document.referrer) // Where visitor has come from
 ```
@@ -144,9 +148,19 @@ To decline cookies:
 	<a href="javascript:void(0);" onClick="jQuery.cookieBar('set','declined');">Decline cookies</a>
 ```
 
+### Honoring ‘Do Not Track’
+
+To honor a user's ‘Do Not Track’ settings, set
+
+```
+honorDnt: true,
+```
+
+This displays a separate message (specified in the setting `dntMessage`) the first time the user visits to let them know, then automatically declines cookies and no longer displays the message on subsequent page visits. It sets an additional cookie (defined in `dntCookieName`) which is empty to begin with and contains `seen` once the message has been displayed. A user can override this setting on a per-site basis by explicitly allowing cookies, for example by a button on the privacy policy page. The ‘Do Not Track’ bar can be styled separately by defining a class in the setting `dntCookieBarClass`.
 
 ## Changelog
 
+* Added optional support for “Do Not Track”, customisable message + cookiebar class
 * Add a wrapper for the message and buttons for better styling
 * User-definable cookie name
 * Custom class names for buttons and wrapper for use with existing frameworks
