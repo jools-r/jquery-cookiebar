@@ -176,19 +176,6 @@
         // Show cookie bar
         else {
 
-            // If Do Not Track is set and DNT message has not yet been displayed
-            if (options.honorDnt && dntEnabled() && dntValue == '') {
-                var message = options.dntMessage;
-                // set Do Not Track message cookie to 'seen'
-                document.cookie = options.dntCookieName + '=seen; expires=' + expireDate + '; path=/';
-            } else {
-                var message = options.message;
-            }
-
-            // Sets up message with drop-in replacements for text-linking policy url
-            // and for accept and decline links if preferred instead of buttons
-            message = message.replace('{policy_url}', options.policyURL).replace('{accept_link}', '<a href="" class="cb-enable">' + options.acceptText + '</a>').replace('{decline_link}', '<a href="" class="cb-disable">' + options.declineText + '</a>');
-
             // Sets up enable/accept button if required
             if (options.acceptButton) {
                 var acceptButton = '<a href="" class="cb-enable ' + options.buttonClass + '" aria-label="accept cookies" role="button">' + options.acceptText + '</a>';
@@ -237,20 +224,34 @@
                 var zindex = '';
             }
 
+            var cookieBarButtons = '';
+
             // If Do Not Track is set and DNT message has not yet been shown
             if (options.honorDnt && dntEnabled() && dntValue == '') {
-                if (options.append) {
-                    $(options.element).append('<div id="cookie-bar"' + fixed + zindex + ' aria-live="polite" aria-label="cookie-consent-bar" aria-describedby="cb-message"><p><span id="cb-message" class="cb-message">' + message + '</span>');
-                } else {
-                    $(options.element).prepend('<div id="cookie-bar"' + fixed + zindex + ' aria-live="polite" aria-label="cookie-consent-bar" aria-describedby="cb-message"><p><span id="cb-message" class="cb-message">' + message + '</span>');
-                }
+                var showBar = true;
+                var message = options.dntMessage;
+                // set Do Not Track message cookie to 'seen'
+                document.cookie = options.dntCookieName + '=seen; expires=' + expireDate + '; path=/';
             }
-            // Displays the cookie bar if arguments met
             else if (options.forceShow || cookieValue == 'enabled' || cookieValue == '') {
+                var showBar = true;
+                var message = options.message;
+                var cookieBarButtons = '<span class="cb-buttons">' + acceptButton + declineButton + policyButton + '</span></p></div>';
+            }
+
+            // Displays the cookie bar if arguments met
+            if (showBar == true) {
+
+                // Sets up message with drop-in replacements for text-linking policy url
+                // and for accept and decline links if preferred instead of buttons
+                message = message.replace('{policy_url}', options.policyURL).replace('{accept_link}', '<a href="" class="cb-enable">' + options.acceptText + '</a>').replace('{decline_link}', '<a href="" class="cb-disable">' + options.declineText + '</a>');
+                var cookieBarContent = '<div id="cookie-bar"' + fixed + zindex + ' aria-live="polite" aria-label="cookie-consent-bar" aria-describedby="cb-message"><p><span id="cb-message" class="cb-message">' + message + '</span>' + cookieBarButtons;
+
+                // Append or prepend cookie bar
                 if (options.append) {
-                    $(options.element).append('<div id="cookie-bar"' + fixed + zindex + ' aria-live="polite" aria-label="cookie-consent-bar" aria-describedby="cb-message"><p><span id="cb-message" class="cb-message">' + message + '</span><span class="cb-buttons">' + acceptButton + declineButton + policyButton + '</span></p></div>');
+                    $(options.element).append(cookieBarContent);
                 } else {
-                    $(options.element).prepend('<div id="cookie-bar"' + fixed + zindex + ' aria-live="polite" aria-label="cookie-consent-bar" aria-describedby="cb-message"><p><span id="cb-message" class="cb-message">' + message + '</span><span class="cb-buttons">' + acceptButton + declineButton + policyButton + '</span></p></div>');
+                    $(options.element).prepend(cookieBarContent);
                 }
             }
 
