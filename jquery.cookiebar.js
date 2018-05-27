@@ -20,6 +20,9 @@
         if (options == 'cookies') {
             // Test cookie values
             var doReturn = 'cookies';
+        } else if (options == 'donottrack') {
+            // Test for Do Not Track browser setting
+            var doReturn = 'donottrack';
         } else if (options == 'set') {
             // Set cookie values
             var doReturn = 'set';
@@ -144,6 +147,19 @@
             } else {
                 return false;
             }
+        }
+
+        // Test for Do Not Track
+        else if (doReturn == 'donottrack') {
+            // 'enabled' is true if Do Not Track detected
+            if (val == 'enabled' && dntEnabled() == true) {
+                return true;
+            }
+            // 'disabled' is true if Do Not Track is NOT detected
+            if (val == 'disabled' && dntEnabled() != true) {
+                return true;
+            }
+            return false;
         }
 
         // Set cookie values
