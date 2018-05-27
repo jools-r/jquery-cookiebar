@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 PrimeBox (info@primebox.co.uk)
+ * Additions: https://github.com/jools-r
  *
  * This work is licensed under the Creative Commons
  * Attribution 3.0 Unported License. To view a copy
@@ -7,7 +8,8 @@
  * http://creativecommons.org/licenses/by/3.0/.
  *
  * Documentation available at:
- * http://www.primebox.co.uk/projects/cookie-bar/
+ * Original: http://www.primebox.co.uk/projects/cookie-bar/
+ * Updates:  https://github.com/jools-r/jquery-cookiebar
  *
  * When using this software you use it at your own risk. We hold
  * no responsibility for any damage caused by using this plugin
@@ -16,12 +18,17 @@
 (function($) {
     $.cookieBar = function(options, val) {
         if (options == 'cookies') {
+            // Test cookie values
             var doReturn = 'cookies';
         } else if (options == 'set') {
+            // Set cookie values
             var doReturn = 'set';
         } else {
+            // Proceed
             var doReturn = false;
         }
+
+        // Settings
         var defaults = {
             message: 'We use cookies to track usage and preferences.', // Message displayed on bar
             cookieName: 'cb-enabled', // Name of cookie
@@ -74,9 +81,11 @@
             aCookie, aCookies = document.cookie.split('; ');
         for (i = 0; i < aCookies.length; i++) {
             aCookie = aCookies[i].split('=');
+            // Cookie consent value
             if (aCookie[0] == options.cookieName) {
                 cookieValue = aCookie[1];
             }
+            // Do Not Track cookie value
             if (aCookie[0] == options.dntCookieName) {
                 dntValue = aCookie[1];
             }
@@ -182,6 +191,7 @@
             } else {
                 var policyButton = '';
             }
+
             // Custom class name for cookie bar if set
             var cbClass = '';
             if (options.cookieBarClass != '') {
@@ -190,6 +200,7 @@
             if (options.honorDnt && (options.dntCookieBarClass != '')) {
                 cbClass = cbClass + ' ' + options.dntCookieBarClass;
             }
+
             // Whether to add "fixed" class to cookie bar
             if (options.fixed) {
                 if (options.bottom) {
@@ -226,6 +237,7 @@
                     $(options.element).prepend('<div id="cookie-bar"' + fixed + zindex + ' aria-live="polite" aria-label="cookie-consent-bar" aria-describedby="cb-message"><p><span id="cb-message" class="cb-message">' + message + '</span><span class="cb-buttons">' + acceptButton + declineButton + policyButton + '</span></p></div>');
                 }
             }
+
 
             var removeBar = function(func) {
                 if (options.acceptOnScroll) $(document).off('scroll');
