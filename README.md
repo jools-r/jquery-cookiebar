@@ -1,45 +1,29 @@
 # jQuery CookieBar Plugin
 
-**A lightweight (4kb minified) customisable and freely stylable jQuery cookie consent bar that can be used for implied and explicit opt-in and opt-out scenarios. It includes a jQuery wrapper function for consent-dependent functionality and methods for resetting cookie consent options, e.g. from a privacy policy page.**
+**A lightweight (5,4kb minified) customisable and freely stylable jQuery cookie consent bar that can be used for implied and explicit opt-in and opt-out scenarios and has optional support for “Do Not Track” detection. It includes wrapper functions for consent-dependent (or do-not-track-dependent) functionality and methods for resetting cookie consent options, e.g. from a privacy policy page.**
 
 *Note: jQuery Cookiebar is for simple universal consent situations and does not provide any means for more granular control of different kinds of cookie usage.*
 
-## Background
-
-The EU General Data Protection Regulation (GDRP) requires that consent be requested before tracking personally identifiable information about website visitors. Invariably, this entails clearly requesting permission to set cookies and informing visitors of cookies used and why. Website visitors must be given the option to allow or disable cookies.
-
-Opinion is divided on whether users should be given the ability to opt out of cookie usage (i.e. consent is implied but can be revoked), or whether an explicit opt-in is required before setting cookies. Since 2012, implied consent has been the de facto norm. However, in late April 2018 German data protection authorities suggested in a [Positionspapier](https://www.ldi.nrw.de/mainmenu_Datenschutz/submenu_Technik/Inhalt/TechnikundOrganisation/Inhalt/Zur-Anwendbarkeit-des-TMG-fuer-nicht-oeffentliche-Stellen-ab-dem-25_-Mai-2018/Positionsbestimmung-TMG.pdf) (PDF) that explicit opt-in is required.
-
-jQuery CookieBar can be used for opt-in, opt-out or partial opt-in/opt-out (e.g. vital cookies active but no tracking) scenarios. On it's own, the plugin just displays a cookie consent message and a corresponding cookie (yes, a cookie is required to store this setting!) with the values `accepted`, `declined` and `enabled`. To disable the use of cookies, you must additionally wrap any javascript dependent on cookie consent in an `if`-statement as described below.
-
-
 ## Introduction
 
-The cookie bar plugin creates a small bar at the top or bottom of the website with a short message about cookies and accept, decline, and privacy policy buttons. Once a user has made the decision to either accept or decline, the cookie bar slides up and disappears.
+jQuery CookieBar adds a cookie consent notice bar with a short message and (optional) accept, decline, and privacy policy buttons. When a visitor decides to accept or decline cookies, the plugin sets a cookie (yes, a cookie) and the cookie bar no longer displays.
 
-The cookie bar can be set up to work in a variety of ways. By default, it uses assumed consent. This means that when a user visits the website, cookies can be set as normal with no interruption. The cookie bar is still displayed to provide the user with options for cookies.
+jQuery CookieBar also provides methods for responding to cookie consent and ‘Do Not Track’ status in your code, so that you can disable, skip or provide alternative content for code that collects personal information.
 
-It can also be set up to assume refusal. In this case no cookies are set when a user visits the website until the user clicks the accept button on the cookie bar.
+jQuery CookieBar can be used for different scenarios:
 
-You can specify which buttons show on the cookie bar. The default is to show the accept and privacy policy buttons and no decline button. The accept, decline and privacy policy buttons can alternatively be incorporated as text links in the text message.
+- Implied consent / assumed consent: Cookies are used but the visitor is given an opportunity to opt out. Cookie status: `enabled`. Implied consent can be automatic (`autoEnable`), on click (`acceptAnyClick`), on scrolling (`acceptOnScroll`) or continuing (`acceptOnContinue`).
+- Explicit consent: Cookies are not used until the visitor explicitly gives consent. Cookie status: `accepted`.
+- Do Not Track recognition: a message is shown on the first visit, then cookies are declined. Cookie status: `declined`.
 
-The cookie bar is very easy to style. There are just a few CSS selectors in total. Changing the heights, widths, background colours, etc. is very quick and easy meaning it can fit in with the website design and colour scheme. Own class names can be applied to the cookiebar wrapper and buttons to style them as part of a larger library.
+Additional methods are provided to respond to cookie consent status in your code, as well as to Do Not Track browser settings.
+
+jQuery CookieBar is freely stylable and positionable and own class names can be specified for the cookiebar and Do Not Track message bars. The accept, decline and privacy policy buttons can also alternatively be incorporated as text links in the text message instead of as separate buttons.
+
 
 ## Installing
 
-To start, download the zip file containing the cookie bar plugin, a CSS file and example HTML document. Upload the javascript and CSS files to your website and add them between your head tags. Make sure to download the latest version of jQuery if your website does not already include it.
-
-You will also need to initialise the cookie bar, which can be done with the following code (Make sure if you already use `$(document).ready()` that you only copy what you need of below so you don't have too many `$(document).ready()`'s).
-
-```js
-	$(document).ready(function() {
-		$.cookieBar();
-	});
-```
-
-Refresh your website and the cookie bar should appear!
-
-A basic setup may look like the following:
+Upload the javascript and CSS files to your website and add them between your head tags as usual. Make sure to include the latest version of jQuery if your website does not already use it. Initialise the plugin with `$.cookieBar();` within your  `$(document).ready() { … }` block. A basic setup may look like the following:
 
 ```html
 	<script src="/your-js-folder/jquery.js"></script>
@@ -51,15 +35,17 @@ A basic setup may look like the following:
 	</script>
 ```
 
-**If the cookiebar does not show, check for any javascript errors.**
+Refresh your website and the cookie bar should appear!
 
-**If the cookiebar continues to show after accepting/declining, make sure to remove the option "forceShow" from your code, or set it to "false".**
 
-## Disabling Google Analytics and other cookies
+## Responding to cookie consent status
 
-If a user chooses to disable cookies (if you give them that option), you need to make sure that scripts such as Google Analytics need to be disabled.
+The plugin on its own just displays the bar and sets a cookie based on the visitor's choice (or the settings you choose). To act on the visitor's choice, you must additionally disable any code that uses cookies or collects personal information such as analytics code. **This does not happen automatically**.
 
-This can be done by wrapping the code in a simple if statement.
+
+#### Checking for implied consent
+
+Wrap your code in a simple if statement:
 
 ```js
 	if (jQuery.cookieBar('cookies')) {
@@ -67,7 +53,11 @@ This can be done by wrapping the code in a simple if statement.
 	}
 ```
 
-This runs the contained code if the cookie consent is `enabled` or `accepted`. If you wish to strictly test for `accepted`, pass that value as a second parameter:
+This runs the contained code if cookie consent is `enabled` or `accepted`.
+
+#### Checking for explicit consent
+
+As above but additionally pass in the value `accepted` like this:
 
 ```js
 	if (jQuery.cookieBar('cookies','accepted')) {
@@ -75,10 +65,79 @@ This runs the contained code if the cookie consent is `enabled` or `accepted`. I
 	}
 ```
 
+This runs the contained code if cookie consent has been explicitly `accepted`.
+
+In addition you should set the following options when initiating the cookie bar:
+
+```js
+$.cookieBar(
+	autoEnable: false,    // Prevents automatic enabling of cookies
+	declineButton: true   // Shows the option to decline cookies
+);
+```
+
+
+## Honoring ‘Do Not Track’
+
+To honor a user's ‘Do Not Track’ browser settings, set `honorDnt: true`:
+
+```js
+$.cookieBar(
+	honorDnt: true
+);
+```
+
+If the plugin detects that 'Do Not Track' is enabled in the browser settings, it:
+
+* defaults to declining cookies automatically
+* shows a different message on the first visit (defined in the setting `dntMessage`)
+
+The cookie bar can be styled different if required by defining a class in the setting `dntCookieBarClass`. By default it sets an additional cookie (defined in `dntCookieName`) which is empty to begin with and contains `seen` once the message has been displayed.
+
+A user can override this setting by explicitly allowing cookies, for example using a button on the privacy policy page.
+
+
+#### Responding to 'Do Not Track' status
+
+If you are happy with the standard behaviour where ‘Do Not Track’ means cookies are disabled, you need only respond to cookie consent status in your code. If you want more fine-grain control, you can additionally check whether 'Do Not Track' is enabled in your code:
+
+```js
+	if (jQuery.cookieBar('donottrack','enabled')) {
+		// ‘Tracking has been disabled’ message
+	}
+```
+
+or potentially more useful:
+
+```js
+	if (jQuery.cookieBar('donottrack','disabled')) {
+		// Google Analytics or other code here
+	}
+```
+
+The contained code runs if ’Do Not Track’ is not switched on.
+
+
+## Setting cookie consent outside the cookiebar
+
+To offer a means for users to opt-out or opt-in from your privacy policy page, for example to revert a previous decision, use the `set` method.
+
+To allow cookies:
+
+```html
+	<a href="javascript:void(0);" onClick="jQuery.cookieBar('set','accepted');">Allow cookies</a>
+```
+
+To decline cookies:
+
+```html
+	<a href="javascript:void(0);" onClick="jQuery.cookieBar('set','declined');">Decline cookies</a>
+```
+
 
 ## Options
 
-There are a number of options allowing you to customise how the plugin works:
+There are a number of options for customising how the plugin works:
 
 ```js
 	message: 'We use cookies to track usage and preferences.', // Message displayed on bar
@@ -119,47 +178,36 @@ There are a number of options allowing you to customise how the plugin works:
 	referrer: String(document.referrer) // Where visitor has come from
 ```
 
-## Replacement strings
+
+## Replacement strings in the message
 
 To include a link to the policy URL as part of the message rather than as a separate button, include `{policy_url}` in the message text, for example:
 
 ```js
 	$.cookieBar({
-		message: 'We use cookies to track usage and preferences. <a href="{policy_url}">Learn more</a>.',
+		message: 'We use cookies to track usage and preferences. <a href="{policy_url}">Learn more</a>',
 		policyURL: '/cookie-policy'
 	});
 ```
 
 To include an accept cookies link or a decline cookies link in the text, insert `{accept_link}` or `{decline_link}` in the message text. The link text from the `acceptText` and `declineText` options will be used but the links will not be styled as buttons. Use the options `acceptButton: false` and `declineButton: false` to suppress the display of the buttons.
 
-## Additional methods
 
-To offer a means for users to opt out or opt in from your privacy policy page, for example to revert a previous decision, use the `set` method.
+## Implied or explicit consent?
 
-To allow cookies:
+The EU General Data Protection Regulation (GDPR) requires that consent be requested before tracking personally identifiable information about website visitors. Opinion is divided on whether users should be given the ability to opt out of cookie usage (i.e. consent is implied but can be revoked), or whether explicit opt-in is required before setting cookies. Implied consent has been the de facto norm since 2012. In late April 2018, however, German data protection authorities suggested in a [Positionspapier](https://www.ldi.nrw.de/mainmenu_Datenschutz/submenu_Technik/Inhalt/TechnikundOrganisation/Inhalt/Zur-Anwendbarkeit-des-TMG-fuer-nicht-oeffentliche-Stellen-ab-dem-25_-Mai-2018/Positionsbestimmung-TMG.pdf) (PDF) that explicit opt-in will be required with the new EU GDPR.
 
-```html
-	<a href="javascript:void(0);" onClick="jQuery.cookieBar('set','accepted');">Allow cookies</a>
-```
 
-To decline cookies:
+## Troubleshooting
 
-```html
-	<a href="javascript:void(0);" onClick="jQuery.cookieBar('set','declined');">Decline cookies</a>
-```
+- If the cookiebar does not show, check for any javascript errors in your browser's inspector console.
+- If the cookiebar continues to show after accepting or declining, make sure the option `forceShow` is not set in your code, or set it to `forceShow: false`.
 
-### Honoring ‘Do Not Track’
-
-To honor a user's ‘Do Not Track’ settings, set
-
-```
-honorDnt: true,
-```
-
-This displays a separate message (specified in the setting `dntMessage`) the first time the user visits to let them know, then automatically declines cookies and no longer displays the message on subsequent page visits. It sets an additional cookie (defined in `dntCookieName`) which is empty to begin with and contains `seen` once the message has been displayed. A user can override this setting on a per-site basis by explicitly allowing cookies, for example by a button on the privacy policy page. The ‘Do Not Track’ bar can be styled separately by defining a class in the setting `dntCookieBarClass`.
 
 ## Changelog
 
+* Reduced code duplication
+* Added method for testing Do Not Track status separately for more fine-grained control
 * Added optional support for “Do Not Track”, customisable message + cookiebar class
 * Add a wrapper for the message and buttons for better styling
 * User-definable cookie name
